@@ -6,17 +6,14 @@ const {
   validateSignUpData,
   validateLogInUpData,
 } = require('../util/validator');
+
 // const admin = require('../util/admin');
 
 firebase.initializeApp(config);
 
 exports.signup = (req, res) => {
-  const newUser = {
-    email: req.body.email,
-    password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
-    handle: req.body.handle,
-  };
+  const newUser = ({ email, password, confirmPassword, handle } = req.body);
+  console.log(newUser);
 
   const { errors, valid } = validateSignUpData(newUser);
 
@@ -108,13 +105,15 @@ exports.uploadImage = (req, res) => {
   let imageToBeUploaded = {};
 
   busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-    if (mimetype !== 'image/jpeg' || mimetype !== 'image/png') {
+    if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
       return res.status(400).json({ error: 'Wrong file type submitted' });
     }
     console.log(fieldname);
     console.log(filename);
     console.log(mimetype);
-    const imageExtension = filename.split('.')[filename.split('.').length - 1];
+    console.log(encoding);
+
+    const imageExtension = filename.split('.').pop();
     imageFileName = `${Math.round(
       Math.random() * 1000000000
     )}.${imageExtension}`;
